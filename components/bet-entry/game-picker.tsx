@@ -1,0 +1,196 @@
+"use client";
+
+import { useEffect, useState } from "react";
+import { Input, Label, Select } from "@/components/ui/input";
+import { LEAGUE_CONFIG, SPORTS, leaguesForSport } from "@/lib/odds/leagues";
+import type { OddsApiEvent } from "@/lib/odds/client";
+
+export interface GameSelection {
+  sport: string;
+  league: string;
+  match: string;
+}
+
+export function GamePicker({
+  value,
+  onChange,
+  idPrefix,
+}: {
+  value: GameSelection;
+  onChange: (v: GameSelection) => void;
+  idPrefix: string;
+}) {
+  const [mode, setMode] = useState<"listed" | "manual">("manual");
+  const [leagueKey, setLeagueKey] = useState<string>(LEAGUE_CONFIG[0]?.apiKey ?? "");
+  const [events, setEvents] = useState<OddsApiEvent[]>([]);
+  const [loading, setLoading] = useState(false);
+  const [notice, setNotice] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (mode !== "listed") return;
+    let cancelled = false;
+
+    async function run() {
+      // Deferred via microtask so the loading/notice resets aren't
+      // synchronous calls within the effect body itself.
+      await Promise.resolve();
+      if (cancelled) return;
+      setLoading(true);
+      setNotice(null);
+      try {
+        const r = await fetch(`/api/fixtures?league=${encodeURIComponent(leagueKey)}`);
+        const data = await r.json();
+        if (cancelled) return;
+        if (data.configured === false) {
+          setNotice(data.message || "Odds API is not configured. Use Manual Entry.");
+          setEvents([]);
+        } else if (data.error) {
+          setNotice(data.error);
+          setEvents([]);
+        } else {
+          setEvents(data.events ?? []);
+        }
+      } catch {
+        if (!cancelled) setNotice("Couldn't load fixtures. Try Manual Entry.");
+      } finally {
+        if (!cancelled) setLoading(false);
+      }
+    }
+
+    run();
+    return () => {
+      cancelled = true;
+    };
+  }, [mode, leagueKey]);
+
+  function handleEventSelect(eventId: string) {
+    const ev = events.find((e) => e.id === eventId);
+    if (!ev) return;
+    const league = LEAGUE_CONFIG.find((l) => l.apiKey === leagueKey);
+    onChange({
+      sport: league?.sport ?? "",
+      league: league?.label ?? "",
+      match: `${ev.away_team} @ ${ev.home_team}`,
+    });
+  }
+
+  return (
+    <div className="space-y-3 rounded-lg border border-slate-200 p-3">
+      <div className="flex gap-2 text-xs">
+        <ModeButton active={mode === "listed"} onClick={() => setMode("listed")}>
+          Listed game
+        </ModeButton>
+        <ModeButton active={mode === "manual"} onClick={() => setMode("manual")}>
+          Manual entry
+        </ModeButton>
+      </div>
+
+      {mode === "listed" ? (
+        <div className="space-y-3">
+          <div>
+            <Label htmlFor={`${idPrefix}-league`}>League</Label>
+            <Select
+              id={`${idPrefix}-league`}
+              value={leagueKey}
+              onChange={(e) => {
+                setLeagueKey(e.target.value);
+              }}
+            >
+              {SPORTS.map((sport) => (
+                <optgroup key={sport} label={sport}>
+                  {leaguesForSport(sport).map((l) => (
+                    <option key={l.apiKey} value={l.apiKey}>
+                      {l.label}
+                    </option>
+                  ))}
+                </optgroup>
+              ))}
+            </Select>
+          </div>
+          <div>
+            <Label htmlFor={`${idPrefix}-event`}>Match</Label>
+            {loading ? (
+              <p className="text-sm text-slate-400">Loading fixtures…</p>
+            ) : notice ? (
+              <p className="text-sm text-amber-600">{notice}</p>
+            ) : events.length === 0 ? (
+              <p className="text-sm text-slate-400">No upcoming fixtures found.</p>
+            ) : (
+              <Select
+                id={`${idPrefix}-event`}
+                defaultValue=""
+                onChange={(e) => handleEventSelect(e.target.value)}
+              >
+                <option value="" disabled>
+                  Select a match…
+                </option>
+                {events.map((ev) => (
+                  <option key={ev.id} value={ev.id}>
+                    {ev.away_team} @ {ev.home_team} — {new Date(ev.commence_time).toLocaleString()}
+                  </option>
+                ))}
+              </Select>
+            )}
+          </div>
+          {value.match && (
+            <p className="text-xs text-slate-500">
+              Selected: <span className="font-medium text-slate-700">{value.match}</span>
+            </p>
+          )}
+        </div>
+      ) : (
+        <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
+          <div>
+            <Label htmlFor={`${idPrefix}-sport`}>Sport</Label>
+            <Input
+              id={`${idPrefix}-sport`}
+              value={value.sport}
+              onChange={(e) => onChange({ ...value, sport: e.target.value })}
+              placeholder="Soccer"
+            />
+          </div>
+          <div>
+            <Label htmlFor={`${idPrefix}-league-manual`}>League</Label>
+            <Input
+              id={`${idPrefix}-league-manual`}
+              value={value.league}
+              onChange={(e) => onChange({ ...value, league: e.target.value })}
+              placeholder="Premier League"
+            />
+          </div>
+          <div>
+            <Label htmlFor={`${idPrefix}-match`}>Match</Label>
+            <Input
+              id={`${idPrefix}-match`}
+              value={value.match}
+              onChange={(e) => onChange({ ...value, match: e.target.value })}
+              placeholder="Arsenal @ Chelsea"
+            />
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
+function ModeButton({
+  active,
+  onClick,
+  children,
+}: {
+  active: boolean;
+  onClick: () => void;
+  children: React.ReactNode;
+}) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      className={`rounded-full px-3 py-1 font-medium ${
+        active ? "bg-slate-900 text-white" : "bg-slate-100 text-slate-600 hover:bg-slate-200"
+      }`}
+    >
+      {children}
+    </button>
+  );
+}

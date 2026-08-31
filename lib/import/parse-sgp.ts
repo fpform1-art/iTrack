@@ -21,7 +21,7 @@ const ACTUAL_RETURN_ALIASES = ["actualreturn", "return", "payout"];
 const WHEN_PLACED_ALIASES = ["whenplaced", "timing"];
 const DATE_ALIASES = ["timestamp", "dateplaced", "date", "placedat"];
 
-/** Extracts up to 6 legs from "Leg N Prop Type" / "Leg N Prop" / "Leg N Odds" / "Leg N Result" style columns. */
+/** Extracts up to 6 legs from "Leg N Prop" / "Leg N Odds" / "Leg N Result" style columns. "Leg N Prop Type" is legacy/optional and still parsed if an older export includes it. */
 function extractLegs(row: RawRow, sharedGame: { sport: string; league: string; match: string }): {
   legs: ParsedLeg[];
   problems: string[];
@@ -35,10 +35,7 @@ function extractLegs(row: RawRow, sharedGame: { sport: string; league: string; m
     const legOddsRaw = getField(row, [`leg${n}odds`]);
     const legResultRaw = getField(row, [`leg${n}result`]);
 
-    if (!propType && !prop) continue; // leg N not present in this row
-
-    if (!propType) problems.push(`Leg ${n}: missing Prop Type`);
-    if (!prop) problems.push(`Leg ${n}: missing Prop`);
+    if (!prop) continue; // leg N not present in this row
 
     const legOdds = legOddsRaw ? parseNumberField(legOddsRaw) : null;
     if (legOddsRaw && (legOdds === null || !(legOdds > 1))) {
@@ -52,8 +49,8 @@ function extractLegs(row: RawRow, sharedGame: { sport: string; league: string; m
       sport: sharedGame.sport,
       league: sharedGame.league,
       match: sharedGame.match,
-      prop_type: propType ?? "",
-      prop: prop ?? "",
+      prop_type: propType ?? null,
+      prop: prop,
       leg_odds: legOdds,
       result: legResult ?? "pending",
     });

@@ -53,21 +53,23 @@ export function MyBetsClient() {
   return (
     <div className="space-y-4">
       <div>
-        <h1 className="text-lg font-semibold text-slate-900">My Bets</h1>
-        <p className="text-sm text-slate-500">Every bet you&apos;ve logged, searchable and filterable.</p>
+        <h1 className="text-lg font-semibold text-slate-900 dark:text-slate-100">My Bets</h1>
+        <p className="text-sm text-slate-500 dark:text-slate-400">Every bet you&apos;ve logged, searchable and filterable.</p>
       </div>
 
-      <div className="flex gap-1 overflow-x-auto rounded-lg bg-slate-100 p-1">
+      <div className="flex gap-1 overflow-x-auto rounded-lg bg-slate-100 p-1 dark:bg-slate-800">
         {TABS.map((t) => (
           <button
             key={t.value}
             onClick={() => setTab(t.value)}
             className={clsx(
               "shrink-0 rounded-md px-3 py-1.5 text-xs font-medium sm:text-sm",
-              tab === t.value ? "bg-white text-slate-900 shadow-sm" : "text-slate-500 hover:text-slate-700"
+              tab === t.value
+                ? "bg-white text-slate-900 shadow-sm dark:bg-slate-950 dark:text-slate-100"
+                : "text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-200"
             )}
           >
-            {t.label} <span className="text-slate-400">({tabCounts[t.value]})</span>
+            {t.label} <span className="text-slate-400 dark:text-slate-500">({tabCounts[t.value]})</span>
           </button>
         ))}
       </div>
@@ -83,7 +85,7 @@ export function MyBetsClient() {
       </div>
 
       {sorted.length === 0 ? (
-        <div className="rounded-lg border border-dashed border-slate-200 py-10 text-center text-sm text-slate-400">
+        <div className="rounded-lg border border-dashed border-slate-200 py-10 text-center text-sm text-slate-400 dark:border-slate-700 dark:text-slate-500">
           No bets match these filters.
         </div>
       ) : (

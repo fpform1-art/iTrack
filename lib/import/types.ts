@@ -14,7 +14,8 @@ export interface ParsedLeg {
   sport: string;
   league: string;
   match: string;
-  prop_type: string;
+  /** Legacy field — no longer required at entry, kept for older exports. */
+  prop_type: string | null;
   prop: string;
   leg_odds: number | null;
   result: LegResult;
@@ -34,7 +35,8 @@ export interface ParsedImportBet {
   result: BetResult;
   actual_return: number | null;
   // Single bets carry prop_type/prop directly; sgp/parlay carry legs.
-  prop_type?: string;
+  /** Legacy field — no longer required at entry, kept for older exports. */
+  prop_type?: string | null;
   prop?: string;
   legs?: ParsedLeg[];
 }

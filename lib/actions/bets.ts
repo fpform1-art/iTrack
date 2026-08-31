@@ -20,7 +20,9 @@ export interface NewLegInput {
   sport: string;
   league: string;
   match: string;
-  prop_type: string;
+  /** Legacy field, no longer collected at entry — kept for backward
+   * compatibility with existing data and CSV imports of old exports. */
+  prop_type?: string | null;
   prop: string;
   leg_odds?: number | null;
 }
@@ -34,7 +36,9 @@ export interface NewBetInput {
   sport?: string; // required for single, and for sgp (single game)
   league?: string;
   match?: string;
-  prop_type?: string; // single only
+  /** Legacy field, no longer collected at entry — kept for backward
+   * compatibility with existing data and CSV imports of old exports. */
+  prop_type?: string | null; // single only
   prop?: string; // single only
   legs?: NewLegInput[]; // sgp/parlay only
   placed_at?: string; // ISO — defaults to now
@@ -57,7 +61,7 @@ export async function createBet(input: NewBetInput): Promise<ActionResult> {
     validateOdds(input.odds);
 
     if (input.bet_type === "single") {
-      if (!input.sport || !input.league || !input.match || !input.prop_type || !input.prop) {
+      if (!input.sport || !input.league || !input.match || !input.prop) {
         throw new Error("All single-bet fields are required.");
       }
     } else {
@@ -66,7 +70,7 @@ export async function createBet(input: NewBetInput): Promise<ActionResult> {
         throw new Error("A multi-leg bet needs between 2 and 6 legs.");
       }
       for (const leg of input.legs!) {
-        if (!leg.sport || !leg.league || !leg.match || !leg.prop_type || !leg.prop) {
+        if (!leg.sport || !leg.league || !leg.match || !leg.prop) {
           throw new Error("All leg fields are required.");
         }
         if (leg.leg_odds != null) validateOdds(leg.leg_odds);
@@ -105,7 +109,7 @@ export async function createBet(input: NewBetInput): Promise<ActionResult> {
         sport: leg.sport,
         league: leg.league,
         match: leg.match,
-        prop_type: leg.prop_type,
+        prop_type: leg.prop_type ?? null,
         prop: leg.prop,
         leg_odds: leg.leg_odds ?? null,
         result: "pending" as LegResult,
@@ -119,10 +123,11 @@ export async function createBet(input: NewBetInput): Promise<ActionResult> {
       }
     } else if (input.bet_type === "single") {
       // Store prop details for singles as a synthetic single leg-less bet —
-      // prop_type/prop live only conceptually here; for singles we keep them
+      // prop/prop_type live only conceptually here; for singles we keep them
       // out of bet_legs (schema has no columns on bets for prop fields, so we
-      // fold prop_type/prop into `match` display via a single leg row for
-      // consistency and easy editing).
+      // fold prop into `match` display via a single leg row for consistency
+      // and easy editing). prop_type is legacy/optional — no longer
+      // collected at entry, kept for backward compatibility.
       const { error: legError } = await supabase.from("bet_legs").insert({
         bet_id: bet.id,
         user_id: user.id,
@@ -130,7 +135,7 @@ export async function createBet(input: NewBetInput): Promise<ActionResult> {
         sport: input.sport!,
         league: input.league!,
         match: input.match!,
-        prop_type: input.prop_type!,
+        prop_type: input.prop_type ?? null,
         prop: input.prop!,
         leg_odds: input.odds,
         result: "pending" as LegResult,
@@ -346,7 +351,7 @@ export async function addLeg(betId: string, leg: NewLegInput): Promise<ActionRes
       sport: leg.sport,
       league: leg.league,
       match: leg.match,
-      prop_type: leg.prop_type,
+      prop_type: leg.prop_type ?? null,
       prop: leg.prop,
       leg_odds: leg.leg_odds ?? null,
       result: "pending" as LegResult,

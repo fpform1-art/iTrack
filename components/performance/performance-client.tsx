@@ -58,8 +58,8 @@ export function PerformanceClient() {
   return (
     <div className="space-y-5">
       <div>
-        <h1 className="text-lg font-semibold text-slate-900">Performance</h1>
-        <p className="text-sm text-slate-500">Deep analytics on your betting history.</p>
+        <h1 className="text-lg font-semibold text-slate-900 dark:text-slate-100">Performance</h1>
+        <p className="text-sm text-slate-500 dark:text-slate-400">Deep analytics on your betting history.</p>
       </div>
 
       <QuickRangeTabs value={range} onChange={setRange} />

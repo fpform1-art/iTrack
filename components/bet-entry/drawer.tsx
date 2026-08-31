@@ -40,7 +40,7 @@ export function Drawer({
     >
       {/* Backdrop — background app stays visible behind it on desktop */}
       <div
-        className="absolute inset-0 bg-slate-900/30"
+        className="absolute inset-0 bg-slate-900/30 dark:bg-black/50"
         onClick={onClose}
       />
 
@@ -49,17 +49,17 @@ export function Drawer({
         aria-modal="true"
         aria-label={title}
         className={clsx(
-          "absolute right-0 top-0 flex h-full w-full flex-col bg-white shadow-xl transition-transform duration-200",
+          "absolute right-0 top-0 flex h-full w-full flex-col bg-white shadow-xl transition-transform duration-200 dark:bg-slate-950",
           "sm:w-[55%] sm:max-w-[640px] sm:min-w-[420px]",
           open ? "translate-x-0" : "translate-x-full"
         )}
       >
-        <div className="flex items-center justify-between border-b border-slate-200 px-5 py-4">
-          <h2 className="text-base font-semibold text-slate-900">{title}</h2>
+        <div className="flex items-center justify-between border-b border-slate-200 px-5 py-4 dark:border-slate-800">
+          <h2 className="text-base font-semibold text-slate-900 dark:text-slate-100">{title}</h2>
           <button
             onClick={onClose}
             aria-label="Close"
-            className="flex h-8 w-8 items-center justify-center rounded-full text-slate-500 hover:bg-slate-100"
+            className="flex h-8 w-8 items-center justify-center rounded-full text-slate-500 hover:bg-slate-100 dark:text-slate-400 dark:hover:bg-slate-800"
           >
             ✕
           </button>

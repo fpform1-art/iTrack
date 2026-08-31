@@ -57,7 +57,9 @@ export interface BetLeg {
   sport: string;
   league: string;
   match: string;
-  prop_type: string;
+  /** Legacy field — no longer collected at bet entry (see the Prop field
+   * instead). Kept nullable for existing data and CSV imports. */
+  prop_type: string | null;
   prop: string;
   leg_odds: number | null;
   result: LegResult;

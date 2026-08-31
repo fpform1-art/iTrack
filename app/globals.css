@@ -1,8 +1,19 @@
 @import "tailwindcss";
 
+/* Tailwind v4 class-based dark mode: the `dark:` variant activates when a
+   `.dark` class is present on an ancestor (set by next-themes on <html>),
+   instead of only following the OS `prefers-color-scheme` media query. This
+   is what makes the Light/Dark/System toggle actually work. */
+@custom-variant dark (&:where(.dark, .dark *));
+
 :root {
   --background: #f7f8fa;
   --foreground: #14181f;
+}
+
+.dark {
+  --background: #0b0f16;
+  --foreground: #e8eaed;
 }
 
 @theme inline {
@@ -12,10 +23,10 @@
   --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
 }
 
-/* iTrack is a light-theme, professional analytics tool by design — no
-   dark-mode auto-switch and no casino-style neon. System font stack keeps
-   the app fast (no font download) and avoids a build-time dependency on
-   Google Fonts. */
+/* iTrack is a professional analytics tool by design in both themes — no
+   casino-style neon in dark mode either. System font stack keeps the app
+   fast (no font download) and avoids a build-time dependency on Google
+   Fonts. */
 body {
   background: var(--background);
   color: var(--foreground);

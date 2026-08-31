@@ -45,7 +45,6 @@ export function parseSingleRows(rows: RawRow[]): ImportPreview {
     if (!sport) problems.push("Missing Sport");
     if (!league) problems.push("Missing League");
     if (!match) problems.push("Missing Match");
-    if (!propType) problems.push("Missing Prop Type");
     if (!prop) problems.push("Missing Prop");
     if (!sportsbook) problems.push("Missing Sportsbook");
     if (odds === null || !(odds > 1)) problems.push("Odds must be a number greater than 1.00");
@@ -70,7 +69,9 @@ export function parseSingleRows(rows: RawRow[]): ImportPreview {
       wager: wager!,
       result: result!,
       actual_return: result === "pending" ? null : actualReturn,
-      prop_type: propType!,
+      // Prop Type is legacy/optional — no longer required, but still
+      // captured when an older export includes it.
+      prop_type: propType ?? null,
       prop: prop!,
     });
   });

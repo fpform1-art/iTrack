@@ -4,6 +4,8 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import clsx from "clsx";
 import { Button } from "@/components/ui/button";
+import { BetaBadge } from "@/components/ui/beta-badge";
+import { ThemeToggle } from "@/components/theme/theme-toggle";
 import { useAppData } from "@/components/shell/app-data-context";
 
 const NAV_ITEMS = [
@@ -18,10 +20,11 @@ export function DesktopNav() {
   const { openBetDrawer, profile } = useAppData();
 
   return (
-    <header className="sticky top-0 z-30 hidden border-b border-slate-200 bg-white/90 backdrop-blur sm:block">
+    <header className="sticky top-0 z-30 hidden border-b border-slate-200 bg-white/90 backdrop-blur sm:block dark:border-slate-800 dark:bg-slate-950/90">
       <div className="mx-auto flex h-14 max-w-6xl items-center gap-6 px-6">
-        <Link href="/home" className="text-base font-semibold text-slate-900">
+        <Link href="/home" className="flex items-center gap-2 text-base font-semibold text-slate-900 dark:text-slate-100">
           iTrack
+          <BetaBadge />
         </Link>
 
         <nav className="flex items-center gap-1">
@@ -33,7 +36,9 @@ export function DesktopNav() {
                 href={item.href}
                 className={clsx(
                   "rounded-md px-3 py-1.5 text-sm font-medium transition-colors",
-                  active ? "bg-slate-900 text-white" : "text-slate-600 hover:bg-slate-100"
+                  active
+                    ? "bg-slate-900 text-white dark:bg-slate-100 dark:text-slate-900"
+                    : "text-slate-600 hover:bg-slate-100 dark:text-slate-300 dark:hover:bg-slate-800"
                 )}
               >
                 {item.label}
@@ -46,9 +51,10 @@ export function DesktopNav() {
           <Button onClick={openBetDrawer} size="sm">
             + Bet
           </Button>
+          <ThemeToggle />
           <Link
             href="/settings"
-            className="flex h-8 w-8 items-center justify-center rounded-full bg-slate-100 text-xs font-semibold text-slate-600 hover:bg-slate-200"
+            className="flex h-8 w-8 items-center justify-center rounded-full bg-slate-100 text-xs font-semibold text-slate-600 hover:bg-slate-200 dark:bg-slate-800 dark:text-slate-300 dark:hover:bg-slate-700"
             title={profile.display_name || "Settings"}
           >
             {(profile.display_name || "U").slice(0, 1).toUpperCase()}

@@ -31,12 +31,12 @@ export function SettingsClient() {
   return (
     <div className="mx-auto max-w-xl space-y-6">
       <div>
-        <h1 className="text-lg font-semibold text-slate-900">Settings</h1>
-        <p className="text-sm text-slate-500">Your profile defaults and account.</p>
+        <h1 className="text-lg font-semibold text-slate-900 dark:text-slate-100">Settings</h1>
+        <p className="text-sm text-slate-500 dark:text-slate-400">Your profile defaults and account.</p>
       </div>
 
       <Card>
-        <h2 className="mb-4 text-sm font-semibold text-slate-700">Profile</h2>
+        <h2 className="mb-4 text-sm font-semibold text-slate-700 dark:text-slate-300">Profile</h2>
         <form action={profileAction} className="space-y-4">
           <div>
             <Label htmlFor="display_name">Profile Name</Label>
@@ -94,8 +94,8 @@ export function SettingsClient() {
       </Card>
 
       <Card>
-        <h2 className="mb-1 text-sm font-semibold text-slate-700">Beta Feedback</h2>
-        <p className="mb-4 text-xs text-slate-500">Bugs, feature ideas, or anything confusing — we read all of it.</p>
+        <h2 className="mb-1 text-sm font-semibold text-slate-700 dark:text-slate-300">Beta Feedback</h2>
+        <p className="mb-4 text-xs text-slate-500 dark:text-slate-400">Bugs, feature ideas, or anything confusing — we read all of it.</p>
         <form action={feedbackAction} className="space-y-4">
           <div>
             <Label htmlFor="category">Category</Label>
@@ -114,7 +114,7 @@ export function SettingsClient() {
               rows={4}
               maxLength={4000}
               required
-              className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-slate-900/10 focus:border-slate-400"
+              className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-slate-900/10 focus:border-slate-400 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100 dark:focus:ring-slate-100/10 dark:focus:border-slate-500"
             />
           </div>
           <FormMessage error={feedbackState.error} success={feedbackState.success} />
@@ -125,8 +125,8 @@ export function SettingsClient() {
       </Card>
 
       <Card>
-        <h2 className="mb-2 text-sm font-semibold text-slate-700">Import from old tracker</h2>
-        <p className="mb-3 text-xs text-slate-500">
+        <h2 className="mb-2 text-sm font-semibold text-slate-700 dark:text-slate-300">Import from old tracker</h2>
+        <p className="mb-3 text-xs text-slate-500 dark:text-slate-400">
           Have data from the Google Sheets tracker? Import it from a CSV export.
         </p>
         <Link href="/settings/import">

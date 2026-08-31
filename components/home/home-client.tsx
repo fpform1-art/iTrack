@@ -44,8 +44,8 @@ export function HomeClient() {
   return (
     <div className="space-y-5">
       <div>
-        <h1 className="text-lg font-semibold text-slate-900">Home</h1>
-        <p className="text-sm text-slate-500">Your bankroll and recent activity at a glance.</p>
+        <h1 className="text-lg font-semibold text-slate-900 dark:text-slate-100">Home</h1>
+        <p className="text-sm text-slate-500 dark:text-slate-400">Your bankroll and recent activity at a glance.</p>
       </div>
 
       <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
@@ -70,11 +70,11 @@ export function HomeClient() {
       <FilterBar bets={bets} filters={filters} onChange={setFilters} />
 
       <div className="space-y-2">
-        <h2 className="text-sm font-medium text-slate-700">
-          Activity {hasActiveFilters && <span className="text-slate-400">({sortedActivity.length})</span>}
+        <h2 className="text-sm font-medium text-slate-700 dark:text-slate-300">
+          Activity {hasActiveFilters && <span className="text-slate-400 dark:text-slate-500">({sortedActivity.length})</span>}
         </h2>
         {sortedActivity.length === 0 ? (
-          <div className="rounded-lg border border-dashed border-slate-200 py-10 text-center text-sm text-slate-400">
+          <div className="rounded-lg border border-dashed border-slate-200 py-10 text-center text-sm text-slate-400 dark:border-slate-700 dark:text-slate-500">
             No bets match these filters yet.
           </div>
         ) : (

@@ -66,7 +66,7 @@ export async function commitImport(rows: ParsedImportBet[]): Promise<CommitImpor
           sport: row.sport,
           league: row.league,
           match: row.match,
-          prop_type: row.prop_type ?? "",
+          prop_type: row.prop_type ?? null,
           prop: row.prop ?? "",
           leg_odds: row.odds,
           result: row.result as LegResult,

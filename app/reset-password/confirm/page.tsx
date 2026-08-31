@@ -5,6 +5,7 @@ import { updatePassword, type ActionState } from "@/lib/actions/auth";
 import { Input, Label } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { FormMessage } from "@/components/ui/form-message";
+import { BetaBadge } from "@/components/ui/beta-badge";
 
 const initialState: ActionState = {};
 
@@ -12,15 +13,18 @@ export default function ResetPasswordConfirmPage() {
   const [state, formAction, pending] = useActionState(updatePassword, initialState);
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-slate-50 px-4">
+    <div className="flex min-h-screen items-center justify-center bg-slate-50 px-4 dark:bg-slate-950">
       <div className="w-full max-w-sm">
         <div className="mb-8 text-center">
-          <h1 className="text-2xl font-semibold text-slate-900">iTrack</h1>
-          <p className="mt-1 text-sm text-slate-500">Betting Performance Tracker</p>
+          <h1 className="flex items-center justify-center gap-2 text-2xl font-semibold text-slate-900 dark:text-slate-100">
+            iTrack
+            <BetaBadge />
+          </h1>
+          <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">Betting Performance Tracker</p>
         </div>
 
-        <div className="rounded-xl border border-slate-200 bg-white p-6 shadow-sm">
-          <h2 className="mb-4 text-lg font-medium text-slate-900">Choose a new password</h2>
+        <div className="rounded-xl border border-slate-200 bg-white p-6 shadow-sm dark:border-slate-800 dark:bg-slate-900">
+          <h2 className="mb-4 text-lg font-medium text-slate-900 dark:text-slate-100">Choose a new password</h2>
 
           <form action={formAction} className="space-y-4">
             <div>

@@ -82,11 +82,11 @@ export function ImportClient() {
   return (
     <div className="mx-auto max-w-2xl space-y-5">
       <div>
-        <Link href="/settings" className="text-xs text-slate-500 hover:text-slate-700">
+        <Link href="/settings" className="text-xs text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-200">
           ← Back to Settings
         </Link>
-        <h1 className="mt-1 text-lg font-semibold text-slate-900">Import from old tracker</h1>
-        <p className="text-sm text-slate-500">
+        <h1 className="mt-1 text-lg font-semibold text-slate-900 dark:text-slate-100">Import from old tracker</h1>
+        <p className="text-sm text-slate-500 dark:text-slate-400">
           Export a CSV from the Google Sheets tracker, choose which tab it came from, and preview before
           importing. Nothing is imported until you confirm — rows with problems are shown, not silently
           skipped.
@@ -112,7 +112,7 @@ export function ImportClient() {
                 </option>
               ))}
             </Select>
-            <p className="mt-1 text-xs text-slate-400">
+            <p className="mt-1 text-xs text-slate-400 dark:text-slate-500">
               {SOURCE_OPTIONS.find((s) => s.value === source)?.hint}
             </p>
           </div>
@@ -127,9 +127,9 @@ export function ImportClient() {
                 const file = e.target.files?.[0];
                 if (file) handleFile(file);
               }}
-              className="block w-full text-sm text-slate-600 file:mr-3 file:rounded-lg file:border-0 file:bg-slate-900 file:px-3 file:py-1.5 file:text-sm file:font-medium file:text-white hover:file:bg-slate-800"
+              className="block w-full text-sm text-slate-600 file:mr-3 file:rounded-lg file:border-0 file:bg-slate-900 file:px-3 file:py-1.5 file:text-sm file:font-medium file:text-white hover:file:bg-slate-800 dark:text-slate-400 dark:file:bg-slate-100 dark:file:text-slate-900 dark:hover:file:bg-white"
             />
-            {fileName && <p className="mt-1 text-xs text-slate-400">{fileName}</p>}
+            {fileName && <p className="mt-1 text-xs text-slate-400 dark:text-slate-500">{fileName}</p>}
           </div>
         </div>
       </Card>
@@ -137,20 +137,20 @@ export function ImportClient() {
       {preview && (
         <Card>
           <div className="mb-3 flex items-center justify-between">
-            <h2 className="text-sm font-semibold text-slate-700">Preview</h2>
+            <h2 className="text-sm font-semibold text-slate-700 dark:text-slate-300">Preview</h2>
             <div className="flex gap-3 text-xs">
-              <span className="text-slate-500">{preview.totalRows} rows read</span>
-              <span className="text-emerald-600">{preview.validRows.length} valid</span>
-              {preview.errors.length > 0 && <span className="text-red-600">{preview.errors.length} with errors</span>}
+              <span className="text-slate-500 dark:text-slate-400">{preview.totalRows} rows read</span>
+              <span className="text-emerald-600 dark:text-emerald-400">{preview.validRows.length} valid</span>
+              {preview.errors.length > 0 && <span className="text-red-600 dark:text-red-400">{preview.errors.length} with errors</span>}
             </div>
           </div>
 
           {preview.errors.length > 0 && (
-            <div className="mb-4 max-h-48 overflow-y-auto rounded-lg border border-red-200 bg-red-50 p-3">
-              <p className="mb-1 text-xs font-medium text-red-700">
+            <div className="mb-4 max-h-48 overflow-y-auto rounded-lg border border-red-200 bg-red-50 p-3 dark:border-red-900 dark:bg-red-950">
+              <p className="mb-1 text-xs font-medium text-red-700 dark:text-red-400">
                 These rows will NOT be imported until fixed in your CSV and re-uploaded:
               </p>
-              <ul className="space-y-1 text-xs text-red-700">
+              <ul className="space-y-1 text-xs text-red-700 dark:text-red-400">
                 {preview.errors.map((e) => (
                   <li key={e.row}>
                     Row {e.row}: {e.message}
@@ -161,10 +161,10 @@ export function ImportClient() {
           )}
 
           {preview.validRows.length > 0 && (
-            <div className="max-h-64 overflow-x-auto overflow-y-auto rounded-lg border border-slate-200">
+            <div className="max-h-64 overflow-x-auto overflow-y-auto rounded-lg border border-slate-200 dark:border-slate-700">
               <table className="w-full min-w-[480px] text-xs">
-                <thead className="sticky top-0 bg-slate-50">
-                  <tr className="text-left text-slate-500">
+                <thead className="sticky top-0 bg-slate-50 dark:bg-slate-800">
+                  <tr className="text-left text-slate-500 dark:text-slate-400">
                     <th className="px-2 py-1.5">Row</th>
                     <th className="px-2 py-1.5">Match</th>
                     <th className="px-2 py-1.5">Type</th>
@@ -175,19 +175,19 @@ export function ImportClient() {
                 </thead>
                 <tbody>
                   {preview.validRows.slice(0, 100).map((row) => (
-                    <tr key={row.row} className="border-t border-slate-100">
-                      <td className="px-2 py-1.5 text-slate-400">{row.row}</td>
-                      <td className="px-2 py-1.5 text-slate-800">{row.match}</td>
-                      <td className="px-2 py-1.5 text-slate-500">{row.bet_type}</td>
-                      <td className="px-2 py-1.5 text-slate-500">{formatOdds(row.odds)}</td>
-                      <td className="px-2 py-1.5 text-slate-500">{formatCurrency(row.wager, profile.currency)}</td>
-                      <td className="px-2 py-1.5 text-slate-500">{row.result}</td>
+                    <tr key={row.row} className="border-t border-slate-100 dark:border-slate-800">
+                      <td className="px-2 py-1.5 text-slate-400 dark:text-slate-500">{row.row}</td>
+                      <td className="px-2 py-1.5 text-slate-800 dark:text-slate-200">{row.match}</td>
+                      <td className="px-2 py-1.5 text-slate-500 dark:text-slate-400">{row.bet_type}</td>
+                      <td className="px-2 py-1.5 text-slate-500 dark:text-slate-400">{formatOdds(row.odds)}</td>
+                      <td className="px-2 py-1.5 text-slate-500 dark:text-slate-400">{formatCurrency(row.wager, profile.currency)}</td>
+                      <td className="px-2 py-1.5 text-slate-500 dark:text-slate-400">{row.result}</td>
                     </tr>
                   ))}
                 </tbody>
               </table>
               {preview.validRows.length > 100 && (
-                <p className="px-2 py-1.5 text-xs text-slate-400">
+                <p className="px-2 py-1.5 text-xs text-slate-400 dark:text-slate-500">
                   Showing first 100 of {preview.validRows.length} valid rows.
                 </p>
               )}
@@ -209,17 +209,17 @@ export function ImportClient() {
 
       {result && (
         <Card>
-          <h2 className="mb-2 text-sm font-semibold text-slate-700">Import result</h2>
-          <p className="text-sm text-slate-600">
-            Imported <span className="font-medium text-emerald-600">{result.imported}</span> bet
+          <h2 className="mb-2 text-sm font-semibold text-slate-700 dark:text-slate-300">Import result</h2>
+          <p className="text-sm text-slate-600 dark:text-slate-400">
+            Imported <span className="font-medium text-emerald-600 dark:text-emerald-400">{result.imported}</span> bet
             {result.imported === 1 ? "" : "s"} into your account.
           </p>
           {result.failed.length > 0 && (
-            <div className="mt-3 rounded-lg border border-red-200 bg-red-50 p-3">
-              <p className="mb-1 text-xs font-medium text-red-700">
+            <div className="mt-3 rounded-lg border border-red-200 bg-red-50 p-3 dark:border-red-900 dark:bg-red-950">
+              <p className="mb-1 text-xs font-medium text-red-700 dark:text-red-400">
                 {result.failed.length} row{result.failed.length === 1 ? "" : "s"} failed to save:
               </p>
-              <ul className="space-y-1 text-xs text-red-700">
+              <ul className="space-y-1 text-xs text-red-700 dark:text-red-400">
                 {result.failed.map((f) => (
                   <li key={f.row}>
                     Row {f.row}: {f.message}

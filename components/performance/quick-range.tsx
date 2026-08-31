@@ -14,14 +14,16 @@ const RANGES: { value: QuickRange; label: string }[] = [
 
 export function QuickRangeTabs({ value, onChange }: { value: QuickRange; onChange: (v: QuickRange) => void }) {
   return (
-    <div className="flex gap-1 overflow-x-auto rounded-lg bg-slate-100 p-1">
+    <div className="flex gap-1 overflow-x-auto rounded-lg bg-slate-100 p-1 dark:bg-slate-800">
       {RANGES.map((r) => (
         <button
           key={r.value}
           onClick={() => onChange(r.value)}
           className={clsx(
             "shrink-0 rounded-md px-3 py-1.5 text-xs font-medium sm:text-sm",
-            value === r.value ? "bg-white text-slate-900 shadow-sm" : "text-slate-500 hover:text-slate-700"
+            value === r.value
+              ? "bg-white text-slate-900 shadow-sm dark:bg-slate-950 dark:text-slate-100"
+              : "text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-200"
           )}
         >
           {r.label}

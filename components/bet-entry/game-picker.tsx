@@ -4,6 +4,12 @@ import { useEffect, useState } from "react";
 import { Input, Label, Select } from "@/components/ui/input";
 import { LEAGUE_CONFIG, SPORTS, leaguesForSport } from "@/lib/odds/leagues";
 import type { OddsApiEvent } from "@/lib/odds/client";
+import {
+  addDaysToDateKey,
+  dayLabel,
+  filterEventsByLocalDate,
+  todayLocalDateKey,
+} from "@/lib/odds/date-filter";
 
 export interface GameSelection {
   sport: string;
@@ -25,6 +31,11 @@ export function GamePicker({
   const [events, setEvents] = useState<OddsApiEvent[]>([]);
   const [loading, setLoading] = useState(false);
   const [notice, setNotice] = useState<string | null>(null);
+  // Sticky across league/sport switches within this picker instance — only
+  // resets if the user explicitly navigates days. Filtering by day never
+  // triggers a new fetch: it's applied client-side to whatever fixtures are
+  // already cached in `events` for the current league.
+  const [selectedDate, setSelectedDate] = useState<string>(todayLocalDateKey());
 
   useEffect(() => {
     if (mode !== "listed") return;
@@ -61,10 +72,14 @@ export function GamePicker({
     return () => {
       cancelled = true;
     };
+    // Deliberately NOT depending on selectedDate — switching days must not
+    // re-fetch; see filterEventsByLocalDate below for the client-side pass.
   }, [mode, leagueKey]);
 
+  const eventsForSelectedDay = filterEventsByLocalDate(events, selectedDate);
+
   function handleEventSelect(eventId: string) {
-    const ev = events.find((e) => e.id === eventId);
+    const ev = eventsForSelectedDay.find((e) => e.id === eventId);
     if (!ev) return;
     const league = LEAGUE_CONFIG.find((l) => l.apiKey === leagueKey);
     onChange({
@@ -75,7 +90,7 @@ export function GamePicker({
   }
 
   return (
-    <div className="space-y-3 rounded-lg border border-slate-200 p-3">
+    <div className="space-y-3 rounded-lg border border-slate-200 p-3 dark:border-slate-700">
       <div className="flex gap-2 text-xs">
         <ModeButton active={mode === "listed"} onClick={() => setMode("listed")}>
           Listed game
@@ -107,14 +122,49 @@ export function GamePicker({
               ))}
             </Select>
           </div>
+
+          <div>
+            <Label>Day</Label>
+            <div className="flex items-center gap-2">
+              <button
+                type="button"
+                onClick={() => setSelectedDate((d) => addDaysToDateKey(d, -1))}
+                aria-label="Previous day"
+                className="flex h-8 w-8 shrink-0 items-center justify-center rounded-md border border-slate-200 text-slate-600 hover:bg-slate-50 dark:border-slate-700 dark:text-slate-300 dark:hover:bg-slate-800"
+              >
+                ‹
+              </button>
+              <span className="flex-1 rounded-md border border-slate-200 bg-slate-50 px-3 py-1.5 text-center text-sm font-medium text-slate-700 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-200">
+                {dayLabel(selectedDate)}
+              </span>
+              <button
+                type="button"
+                onClick={() => setSelectedDate((d) => addDaysToDateKey(d, 1))}
+                aria-label="Next day"
+                className="flex h-8 w-8 shrink-0 items-center justify-center rounded-md border border-slate-200 text-slate-600 hover:bg-slate-50 dark:border-slate-700 dark:text-slate-300 dark:hover:bg-slate-800"
+              >
+                ›
+              </button>
+              {selectedDate !== todayLocalDateKey() && (
+                <button
+                  type="button"
+                  onClick={() => setSelectedDate(todayLocalDateKey())}
+                  className="shrink-0 text-xs text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-200"
+                >
+                  Today
+                </button>
+              )}
+            </div>
+          </div>
+
           <div>
             <Label htmlFor={`${idPrefix}-event`}>Match</Label>
             {loading ? (
-              <p className="text-sm text-slate-400">Loading fixtures…</p>
+              <p className="text-sm text-slate-400 dark:text-slate-500">Loading fixtures…</p>
             ) : notice ? (
-              <p className="text-sm text-amber-600">{notice}</p>
-            ) : events.length === 0 ? (
-              <p className="text-sm text-slate-400">No upcoming fixtures found.</p>
+              <p className="text-sm text-amber-600 dark:text-amber-400">{notice}</p>
+            ) : eventsForSelectedDay.length === 0 ? (
+              <p className="text-sm text-slate-400 dark:text-slate-500">No games scheduled for this day.</p>
             ) : (
               <Select
                 id={`${idPrefix}-event`}
@@ -124,17 +174,20 @@ export function GamePicker({
                 <option value="" disabled>
                   Select a match…
                 </option>
-                {events.map((ev) => (
+                {eventsForSelectedDay.map((ev) => (
                   <option key={ev.id} value={ev.id}>
-                    {ev.away_team} @ {ev.home_team} — {new Date(ev.commence_time).toLocaleString()}
+                    {ev.away_team} @ {ev.home_team} — {new Date(ev.commence_time).toLocaleTimeString([], {
+                      hour: "numeric",
+                      minute: "2-digit",
+                    })}
                   </option>
                 ))}
               </Select>
             )}
           </div>
           {value.match && (
-            <p className="text-xs text-slate-500">
-              Selected: <span className="font-medium text-slate-700">{value.match}</span>
+            <p className="text-xs text-slate-500 dark:text-slate-400">
+              Selected: <span className="font-medium text-slate-700 dark:text-slate-200">{value.match}</span>
             </p>
           )}
         </div>
@@ -187,7 +240,9 @@ function ModeButton({
       type="button"
       onClick={onClick}
       className={`rounded-full px-3 py-1 font-medium ${
-        active ? "bg-slate-900 text-white" : "bg-slate-100 text-slate-600 hover:bg-slate-200"
+        active
+          ? "bg-slate-900 text-white dark:bg-slate-100 dark:text-slate-900"
+          : "bg-slate-100 text-slate-600 hover:bg-slate-200 dark:bg-slate-800 dark:text-slate-300 dark:hover:bg-slate-700"
       }`}
     >
       {children}

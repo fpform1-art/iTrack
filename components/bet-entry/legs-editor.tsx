@@ -9,7 +9,6 @@ export interface LegFormState {
   sport: string;
   league: string;
   match: string;
-  prop_type: string;
   prop: string;
   leg_odds: string; // string in form state, parsed on submit
 }
@@ -18,7 +17,6 @@ export const emptyLeg: LegFormState = {
   sport: "",
   league: "",
   match: "",
-  prop_type: "",
   prop: "",
   leg_odds: "",
 };
@@ -52,16 +50,16 @@ export function LegsEditor({
   return (
     <div className="space-y-3">
       {legs.map((leg, idx) => (
-        <div key={idx} className="rounded-lg border border-slate-200 p-3">
+        <div key={idx} className="rounded-lg border border-slate-200 p-3 dark:border-slate-700">
           <div className="mb-2 flex items-center justify-between">
-            <span className="text-xs font-semibold uppercase tracking-wide text-slate-500">
+            <span className="text-xs font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400">
               Leg {idx + 1}
             </span>
             {legs.length > MIN_LEGS && (
               <button
                 type="button"
                 onClick={() => removeLeg(idx)}
-                className="text-xs text-red-600 hover:text-red-700"
+                className="text-xs text-red-600 hover:text-red-700 dark:text-red-400 dark:hover:text-red-300"
               >
                 Remove
               </button>
@@ -78,23 +76,14 @@ export function LegsEditor({
             </div>
           )}
 
-          <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
-            <div>
-              <Label htmlFor={`leg-${idx}-prop-type`}>Prop Type</Label>
-              <Input
-                id={`leg-${idx}-prop-type`}
-                value={leg.prop_type}
-                onChange={(e) => updateLeg(idx, { prop_type: e.target.value })}
-                placeholder="Anytime Scorer"
-              />
-            </div>
+          <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
             <div>
               <Label htmlFor={`leg-${idx}-prop`}>Prop</Label>
               <Input
                 id={`leg-${idx}-prop`}
                 value={leg.prop}
                 onChange={(e) => updateLeg(idx, { prop: e.target.value })}
-                placeholder="Bukayo Saka"
+                placeholder="Bukayo Saka — Anytime Scorer"
               />
             </div>
             <div>

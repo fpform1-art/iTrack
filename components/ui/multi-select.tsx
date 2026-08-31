@@ -55,8 +55,8 @@ export function MultiSelect({
         className={clsx(
           "flex items-center gap-1.5 rounded-lg border px-3 py-1.5 text-xs font-medium sm:text-sm",
           selected.length > 0
-            ? "border-slate-900 bg-slate-900 text-white"
-            : "border-slate-200 bg-white text-slate-600 hover:bg-slate-50"
+            ? "border-slate-900 bg-slate-900 text-white dark:border-slate-100 dark:bg-slate-100 dark:text-slate-900"
+            : "border-slate-200 bg-white text-slate-600 hover:bg-slate-50 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-300 dark:hover:bg-slate-800"
         )}
       >
         {buttonLabel}
@@ -64,20 +64,20 @@ export function MultiSelect({
       </button>
 
       {open && (
-        <div className="absolute left-0 z-20 mt-1 max-h-64 w-56 max-w-[85vw] overflow-y-auto rounded-lg border border-slate-200 bg-white p-2 shadow-lg">
+        <div className="absolute left-0 z-20 mt-1 max-h-64 w-56 max-w-[85vw] overflow-y-auto rounded-lg border border-slate-200 bg-white p-2 shadow-lg dark:border-slate-700 dark:bg-slate-900">
           {normalized.length === 0 ? (
-            <p className="px-2 py-1 text-xs text-slate-400">No options yet</p>
+            <p className="px-2 py-1 text-xs text-slate-400 dark:text-slate-500">No options yet</p>
           ) : (
             normalized.map((opt) => (
               <label
                 key={opt.value}
-                className="flex cursor-pointer items-center gap-2 rounded-md px-2 py-1.5 text-sm hover:bg-slate-50"
+                className="flex cursor-pointer items-center gap-2 rounded-md px-2 py-1.5 text-sm hover:bg-slate-50 dark:text-slate-200 dark:hover:bg-slate-800"
               >
                 <input
                   type="checkbox"
                   checked={selected.includes(opt.value)}
                   onChange={() => toggle(opt.value)}
-                  className="h-4 w-4 rounded border-slate-300"
+                  className="h-4 w-4 rounded border-slate-300 dark:border-slate-600"
                 />
                 {opt.label}
               </label>

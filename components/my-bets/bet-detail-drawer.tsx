@@ -81,7 +81,7 @@ export function BetDetailDrawer({ bet, onClose }: { bet: Bet | null; onClose: ()
 
   if (singleLeg && singleLeg.id !== loadedLegId) {
     setLoadedLegId(singleLeg.id);
-    setPropType(singleLeg.prop_type);
+    setPropType(singleLeg.prop_type ?? "");
     setProp(singleLeg.prop);
   }
 
@@ -212,9 +212,9 @@ export function BetDetailDrawer({ bet, onClose }: { bet: Bet | null; onClose: ()
   return (
     <Drawer open={Boolean(bet)} onClose={onClose} title={isSingle ? "Edit Bet" : "Edit Bet / Grade"}>
       <div className="space-y-5 pb-6">
-        <div className="rounded-lg bg-slate-50 p-3">
-          <p className="text-sm font-medium text-slate-900">{bet.match}</p>
-          <p className="text-xs text-slate-500">
+        <div className="rounded-lg bg-slate-50 p-3 dark:bg-slate-900">
+          <p className="text-sm font-medium text-slate-900 dark:text-slate-100">{bet.match}</p>
+          <p className="text-xs text-slate-500 dark:text-slate-400">
             {bet.sport} • {bet.league} • {new Date(bet.placed_at).toLocaleString()}
           </p>
         </div>
@@ -259,25 +259,25 @@ export function BetDetailDrawer({ bet, onClose }: { bet: Bet | null; onClose: ()
         {isMulti && (
           <div className="space-y-3">
             <div className="flex items-center justify-between">
-              <h3 className="text-sm font-semibold text-slate-700">
-                Legs {legLocked && <span className="text-xs font-normal text-slate-400">(locked)</span>}
+              <h3 className="text-sm font-semibold text-slate-700 dark:text-slate-300">
+                Legs {legLocked && <span className="text-xs font-normal text-slate-400 dark:text-slate-500">(locked)</span>}
               </h3>
               {!legLocked && legs.length < MAX_LEGS && (
-                <button type="button" onClick={handleAddLeg} className="text-xs text-slate-600 hover:text-slate-900">
+                <button type="button" onClick={handleAddLeg} className="text-xs text-slate-600 hover:text-slate-900 dark:text-slate-400 dark:hover:text-slate-100">
                   + Add leg
                 </button>
               )}
             </div>
             {loading ? (
-              <p className="text-sm text-slate-400">Loading legs…</p>
+              <p className="text-sm text-slate-400 dark:text-slate-500">Loading legs…</p>
             ) : (
               legs.map((leg) => (
-                <div key={leg.id} className="flex items-center justify-between gap-2 rounded-lg border border-slate-200 p-2.5">
+                <div key={leg.id} className="flex items-center justify-between gap-2 rounded-lg border border-slate-200 p-2.5 dark:border-slate-700">
                   <div className="min-w-0 flex-1">
-                    <p className="truncate text-sm text-slate-800">
-                      {leg.prop_type}: {leg.prop}
+                    <p className="truncate text-sm text-slate-800 dark:text-slate-200">
+                      {leg.prop_type ? `${leg.prop_type}: ${leg.prop}` : leg.prop}
                     </p>
-                    <p className="truncate text-xs text-slate-400">{leg.match}</p>
+                    <p className="truncate text-xs text-slate-400 dark:text-slate-500">{leg.match}</p>
                   </div>
                   <div className="flex shrink-0 items-center gap-2">
                     <Select
@@ -295,7 +295,7 @@ export function BetDetailDrawer({ bet, onClose }: { bet: Bet | null; onClose: ()
                       <button
                         type="button"
                         onClick={() => handleRemoveLeg(leg.id)}
-                        className="text-xs text-red-600 hover:text-red-700"
+                        className="text-xs text-red-600 hover:text-red-700 dark:text-red-400 dark:hover:text-red-300"
                       >
                         Remove
                       </button>
@@ -307,8 +307,8 @@ export function BetDetailDrawer({ bet, onClose }: { bet: Bet | null; onClose: ()
           </div>
         )}
 
-        <div className="space-y-3 border-t border-slate-200 pt-4">
-          <h3 className="text-sm font-semibold text-slate-700">Overall Result</h3>
+        <div className="space-y-3 border-t border-slate-200 pt-4 dark:border-slate-800">
+          <h3 className="text-sm font-semibold text-slate-700 dark:text-slate-300">Overall Result</h3>
           <div className="grid grid-cols-2 gap-3">
             <div>
               <Label htmlFor="edit-result">Result</Label>
@@ -340,13 +340,13 @@ export function BetDetailDrawer({ bet, onClose }: { bet: Bet | null; onClose: ()
               />
             </div>
           </div>
-          <p className="text-xs text-slate-400">
+          <p className="text-xs text-slate-400 dark:text-slate-500">
             Potential payout at these odds: {formatCurrency(Number(wager || 0) * Number(odds || 0), profile.currency)}
           </p>
         </div>
 
         {error && (
-          <div className="rounded-md border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-700">{error}</div>
+          <div className="rounded-md border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-700 dark:border-red-900 dark:bg-red-950 dark:text-red-400">{error}</div>
         )}
 
         <div className="flex gap-2">

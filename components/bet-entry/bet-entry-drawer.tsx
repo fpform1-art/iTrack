@@ -28,7 +28,6 @@ export function BetEntryDrawer() {
 
   // Single
   const [game, setGame] = useState<GameSelection>({ sport: "", league: "", match: "" });
-  const [propType, setPropType] = useState("");
   const [prop, setProp] = useState("");
 
   // SGP (one shared game)
@@ -38,6 +37,23 @@ export function BetEntryDrawer() {
   // Parlay (per-leg game)
   const [parlayLegs, setParlayLegs] = useState<LegFormState[]>([{ ...emptyLeg }, { ...emptyLeg }]);
 
+  // This component stays mounted for the whole session (only visibility
+  // toggles), so `useState(profile.default_sportsbook || "")` above only
+  // ever runs once, at first mount. If the user updates their default
+  // sportsbook in Settings and then opens Bet Entry, the field would still
+  // show whatever was true when the app first loaded. Re-sync from the
+  // current profile every time the drawer transitions from closed to open
+  // (React's render-phase-adjustment pattern, not an Effect) so Settings
+  // changes are picked up without needing to sign out or reload.
+  const [hasSyncedDefaultsForOpen, setHasSyncedDefaultsForOpen] = useState(false);
+  if (isBetDrawerOpen && !hasSyncedDefaultsForOpen) {
+    setHasSyncedDefaultsForOpen(true);
+    setSportsbook(profile.default_sportsbook || "");
+    setWager(profile.default_wager ? String(profile.default_wager) : "");
+  } else if (!isBetDrawerOpen && hasSyncedDefaultsForOpen) {
+    setHasSyncedDefaultsForOpen(false);
+  }
+
   function resetForm() {
     setBetType("single");
     setWhenPlaced("pregame");
@@ -45,7 +61,6 @@ export function BetEntryDrawer() {
     setWager(profile.default_wager ? String(profile.default_wager) : "");
     setOdds("");
     setGame({ sport: "", league: "", match: "" });
-    setPropType("");
     setProp("");
     setSgpGame({ sport: "", league: "", match: "" });
     setSgpLegs([{ ...emptyLeg }, { ...emptyLeg }]);
@@ -73,7 +88,7 @@ export function BetEntryDrawer() {
       let result;
       if (betType === "single") {
         if (!game.sport || !game.league || !game.match) return setError("Select or enter a game.");
-        if (!propType.trim() || !prop.trim()) return setError("Prop type and prop are required.");
+        if (!prop.trim()) return setError("Prop is required.");
         result = await createBet({
           bet_type: "single",
           when_placed: whenPlaced,
@@ -83,7 +98,6 @@ export function BetEntryDrawer() {
           sport: game.sport,
           league: game.league,
           match: game.match,
-          prop_type: propType,
           prop,
         });
       } else if (betType === "sgp") {
@@ -93,7 +107,7 @@ export function BetEntryDrawer() {
           return setError("Select or enter the game for this SGP.");
         }
         for (const leg of sgpLegs) {
-          if (!leg.prop_type.trim() || !leg.prop.trim()) return setError("Every leg needs a prop type and prop.");
+          if (!leg.prop.trim()) return setError("Every leg needs a prop.");
         }
         result = await createBet({
           bet_type: "sgp",
@@ -108,7 +122,6 @@ export function BetEntryDrawer() {
             sport: sgpGame.sport,
             league: sgpGame.league,
             match: sgpGame.match,
-            prop_type: l.prop_type,
             prop: l.prop,
             leg_odds: l.leg_odds ? Number(l.leg_odds) : null,
           })),
@@ -118,7 +131,7 @@ export function BetEntryDrawer() {
         if (!check.valid) return setError(check.message!);
         for (const leg of parlayLegs) {
           if (!leg.sport || !leg.league || !leg.match) return setError("Every leg needs a game.");
-          if (!leg.prop_type.trim() || !leg.prop.trim()) return setError("Every leg needs a prop type and prop.");
+          if (!leg.prop.trim()) return setError("Every leg needs a prop.");
         }
         result = await createBet({
           bet_type: "parlay",
@@ -130,7 +143,6 @@ export function BetEntryDrawer() {
             sport: l.sport,
             league: l.league,
             match: l.match,
-            prop_type: l.prop_type,
             prop: l.prop,
             leg_odds: l.leg_odds ? Number(l.leg_odds) : null,
           })),
@@ -179,20 +191,14 @@ export function BetEntryDrawer() {
         {betType === "single" && (
           <div className="space-y-3">
             <GamePicker idPrefix="single" value={game} onChange={setGame} />
-            <div className="grid grid-cols-2 gap-3">
-              <div>
-                <Label htmlFor="prop-type">Prop Type</Label>
-                <Input
-                  id="prop-type"
-                  value={propType}
-                  onChange={(e) => setPropType(e.target.value)}
-                  placeholder="Moneyline"
-                />
-              </div>
-              <div>
-                <Label htmlFor="prop">Prop</Label>
-                <Input id="prop" value={prop} onChange={(e) => setProp(e.target.value)} placeholder="Arsenal ML" />
-              </div>
+            <div>
+              <Label htmlFor="prop">Prop</Label>
+              <Input
+                id="prop"
+                value={prop}
+                onChange={(e) => setProp(e.target.value)}
+                placeholder="Arsenal Moneyline"
+              />
             </div>
           </div>
         )}
@@ -236,7 +242,7 @@ export function BetEntryDrawer() {
         </div>
 
         {error && (
-          <div className="rounded-md border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-700">
+          <div className="rounded-md border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-700 dark:border-red-900 dark:bg-red-950 dark:text-red-400">
             {error}
           </div>
         )}

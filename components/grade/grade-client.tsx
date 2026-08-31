@@ -26,8 +26,8 @@ export function GradeClient() {
   return (
     <div className="space-y-4">
       <div>
-        <h1 className="text-lg font-semibold text-slate-900">Grade</h1>
-        <p className="text-sm text-slate-500">
+        <h1 className="text-lg font-semibold text-slate-900 dark:text-slate-100">Grade</h1>
+        <p className="text-sm text-slate-500 dark:text-slate-400">
           {pending.length} bet{pending.length === 1 ? "" : "s"} waiting to be graded — oldest first.
         </p>
       </div>
@@ -49,7 +49,7 @@ export function GradeClient() {
       </div>
 
       {pending.length === 0 ? (
-        <div className="rounded-lg border border-dashed border-slate-200 py-10 text-center text-sm text-slate-400">
+        <div className="rounded-lg border border-dashed border-slate-200 py-10 text-center text-sm text-slate-400 dark:border-slate-700 dark:text-slate-500">
           You&apos;re all caught up — no pending bets to grade.
         </div>
       ) : (

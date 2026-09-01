@@ -1,6 +1,6 @@
 import clsx from "clsx";
 
-/** Small blue "BETA" pill shown beside the iTrack brand mark everywhere it appears. */
+/** Small blue "BETA" pill shown beside the iTraxc brand mark everywhere it appears. */
 export function BetaBadge({ className }: { className?: string }) {
   return (
     <span

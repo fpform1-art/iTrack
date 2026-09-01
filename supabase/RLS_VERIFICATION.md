@@ -1,6 +1,6 @@
 # RLS Verification Queries
 
-These are documented manual verification steps for iTrack's Row Level
+These are documented manual verification steps for iTraxc's Row Level
 Security. Run them in the Supabase SQL editor (or `psql`) against a real
 project after applying the migrations, using two real auth users.
 

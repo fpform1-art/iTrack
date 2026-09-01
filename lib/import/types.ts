@@ -1,6 +1,6 @@
 import type { BetResult, BetType, LegResult, WhenPlaced } from "@/types/database";
 
-/** One of the three legacy Google Sheets tabs the old iTrack tracker used. */
+/** One of the three legacy Google Sheets tabs the old iTraxc tracker used. */
 export type ImportSource = "Form Responses3" | "SGP Responses" | "Parlay Responses";
 
 export const IMPORT_SOURCES: ImportSource[] = ["Form Responses3", "SGP Responses", "Parlay Responses"];

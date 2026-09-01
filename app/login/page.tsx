@@ -26,7 +26,7 @@ export default function LoginPage() {
       <div className="w-full max-w-sm">
         <div className="mb-8 text-center">
           <h1 className="flex items-center justify-center gap-2 text-2xl font-semibold text-slate-900 dark:text-slate-100">
-            iTrack
+            iTraxc
             <BetaBadge />
           </h1>
           <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">Betting Performance Tracker</p>

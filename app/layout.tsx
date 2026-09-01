@@ -3,7 +3,7 @@ import "./globals.css";
 import { ThemeProvider } from "@/components/theme/theme-provider";
 
 export const metadata: Metadata = {
-  title: "iTrack — Betting Performance Tracker",
+  title: "iTraxc — Betting Performance Tracker",
   description: "A personal, private way to track bets, results, and bankroll performance over time.",
 };
 

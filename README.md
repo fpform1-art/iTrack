@@ -1,10 +1,10 @@
-# iTrack — Betting Performance Tracker
+# iTraxc — Betting Performance Tracker
 
 A personal, private, multi-user tool for tracking bets, results, bankroll,
 and ROI over time. It replaces an earlier Google Sheets + Apps Script
 prototype with a fast Next.js app on Supabase.
 
-**iTrack is not a sportsbook, gambling operator, AI picks service, odds
+**iTraxc is not a sportsbook, gambling operator, AI picks service, odds
 recommendation service, or betting automation system.** It only helps users
 record and analyze bets they've placed elsewhere.
 
@@ -180,7 +180,7 @@ bets are always attached to your own currently-logged-in account.
    Settings → Environment Variables** (Production, and Preview if you want
    preview deployments to work against the same or a separate Supabase
    project). Set `NEXT_PUBLIC_APP_URL` to your Vercel production URL (e.g.
-   `https://itrack.vercel.app`).
+   `https://itraxc.vercel.app`).
 5. Deploy.
 6. Back in Supabase → **Authentication → URL Configuration**, add
    `https://<your-vercel-domain>/auth/callback` as a Redirect URL (and

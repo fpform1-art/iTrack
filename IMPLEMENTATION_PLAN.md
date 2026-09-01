@@ -1,4 +1,4 @@
-# iTrack — Implementation Plan
+# iTraxc — Implementation Plan
 
 Personal, multi-user betting performance tracker. Next.js (App Router) + TypeScript + Supabase (Postgres/Auth/RLS) + Tailwind + Recharts. Deployed on Vercel.
 

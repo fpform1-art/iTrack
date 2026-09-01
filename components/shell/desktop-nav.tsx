@@ -23,7 +23,7 @@ export function DesktopNav() {
     <header className="sticky top-0 z-30 hidden border-b border-slate-200 bg-white/90 backdrop-blur sm:block dark:border-slate-800 dark:bg-slate-950/90">
       <div className="mx-auto flex h-14 max-w-6xl items-center gap-6 px-6">
         <Link href="/home" className="flex items-center gap-2 text-base font-semibold text-slate-900 dark:text-slate-100">
-          iTrack
+          iTraxc
           <BetaBadge />
         </Link>
 

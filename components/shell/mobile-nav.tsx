@@ -19,7 +19,7 @@ export function MobileTopBar() {
   return (
     <header className="sticky top-0 z-30 flex h-12 items-center justify-between border-b border-slate-200 bg-white/90 px-4 backdrop-blur sm:hidden dark:border-slate-800 dark:bg-slate-950/90">
       <Link href="/home" className="flex items-center gap-2 text-base font-semibold text-slate-900 dark:text-slate-100">
-        iTrack
+        iTraxc
         <BetaBadge />
       </Link>
       <div className="flex items-center gap-2">

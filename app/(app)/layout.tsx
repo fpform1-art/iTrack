@@ -23,7 +23,7 @@ export default async function AppLayout({ children }: { children: React.ReactNod
       <div className="min-h-screen bg-slate-50 dark:bg-slate-950">
         <DesktopNav />
         <MobileTopBar />
-        <main className="mx-auto max-w-6xl px-4 pb-20 pt-4 sm:px-6 sm:pb-8 sm:pt-6">{children}</main>
+        <main className="mx-auto max-w-6xl px-4 pb-[calc(5rem+env(safe-area-inset-bottom))] pt-4 sm:px-6 sm:pb-8 sm:pt-6">{children}</main>
         <MobileBottomNav />
         <BetEntryDrawer />
         <ThemedToaster />

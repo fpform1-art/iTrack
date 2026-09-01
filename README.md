@@ -192,6 +192,24 @@ bets are always attached to your own currently-logged-in account.
 No server or container config is needed beyond the environment variables —
 this is a standard Next.js App Router deployment.
 
+## Installing as an app (PWA)
+
+iTraxc is an installable Progressive Web App — users can add it to their
+phone's home screen from Safari (iOS) or Chrome (Android) and launch it in
+standalone mode (no browser address bar). No React Native/Capacitor wrapper
+is involved; this is the same Next.js app, just installable.
+
+- **Manifest**: `app/manifest.ts` (served at `/manifest.webmanifest`)
+- **Icons**: `app/icon.tsx`, `app/apple-icon.tsx`, and the three files in
+  `public/icons/` are all **placeholder artwork** — see `PWA_ICONS.md` for
+  exactly which files to replace once real iTraxc branding exists.
+- **Service worker**: `public/sw.js`, registered by
+  `components/pwa/service-worker-registration.tsx`. Deliberately minimal —
+  it only caches static, non-personalized assets (hashed `_next/static`
+  build files, icons, the manifest) and never touches page navigations,
+  `/api/*`, or Supabase requests, since this app holds live private betting
+  data that must never be served stale or cached across sessions.
+
 ## Known beta limitations
 
 Deliberately out of scope for this beta (per the original product spec):

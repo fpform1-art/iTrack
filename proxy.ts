@@ -10,8 +10,12 @@ export async function proxy(request: NextRequest) {
 export const config = {
   matcher: [
     /*
-     * Match all request paths except static assets and image optimization.
+     * Match all request paths except static assets, image optimization,
+     * and the PWA manifest/icon/service-worker routes — none of these are
+     * pages and none should ever be auth-gated (a redirected, non-JSON
+     * response for /manifest.webmanifest breaks install detection, and a
+     * redirected /icon breaks the favicon on every public page).
      */
-    "/((?!_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)",
+    "/((?!_next/static|_next/image|favicon.ico|manifest.webmanifest|icon|apple-icon|sw.js|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)",
   ],
 };

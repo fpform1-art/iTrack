@@ -17,7 +17,7 @@ const NAV_ITEMS = [
 export function MobileTopBar() {
   const { profile } = useAppData();
   return (
-    <header className="sticky top-0 z-30 flex h-12 items-center justify-between border-b border-slate-200 bg-white/90 px-4 backdrop-blur sm:hidden dark:border-slate-800 dark:bg-slate-950/90">
+    <header className="sticky top-0 z-30 flex h-12 items-center justify-between border-b border-slate-200 bg-white/90 px-4 pt-[env(safe-area-inset-top)] backdrop-blur sm:hidden dark:border-slate-800 dark:bg-slate-950/90">
       <Link href="/home" className="flex items-center gap-2 text-base font-semibold text-slate-900 dark:text-slate-100">
         iTraxc
         <BetaBadge />
@@ -40,7 +40,7 @@ export function MobileBottomNav() {
   const { openBetDrawer } = useAppData();
 
   return (
-    <nav className="fixed inset-x-0 bottom-0 z-30 grid grid-cols-5 border-t border-slate-200 bg-white sm:hidden dark:border-slate-800 dark:bg-slate-950">
+    <nav className="fixed inset-x-0 bottom-0 z-30 grid grid-cols-5 border-t border-slate-200 bg-white pb-[env(safe-area-inset-bottom)] sm:hidden dark:border-slate-800 dark:bg-slate-950">
       {NAV_ITEMS.slice(0, 2).map((item) => (
         <NavLink key={item.href} href={item.href} label={item.label} active={pathname.startsWith(item.href)} />
       ))}

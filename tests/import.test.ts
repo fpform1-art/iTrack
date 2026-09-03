@@ -2,6 +2,7 @@ import { describe, it, expect } from "vitest";
 import { parseSingleRows } from "@/lib/import/parse-single";
 import { parseSgpRows } from "@/lib/import/parse-sgp";
 import { parseParlayRows } from "@/lib/import/parse-parlay";
+import { MAX_LEGS } from "@/lib/calc/validation";
 
 describe("parseSingleRows (Form Responses3)", () => {
   it("parses a well-formed row into a valid single bet", () => {
@@ -145,7 +146,7 @@ describe("parseSgpRows (SGP Responses)", () => {
     expect(errors[0].message).toMatch(/at least 2 legs/);
   });
 
-  it("caps at 6 legs even if more columns exist", () => {
+  it("caps at MAX_LEGS legs even if more columns exist", () => {
     const row: Record<string, string> = {
       Sport: "Soccer",
       League: "EPL",
@@ -155,13 +156,33 @@ describe("parseSgpRows (SGP Responses)", () => {
       Wager: "10",
       Result: "Win",
     };
-    for (let n = 1; n <= 7; n++) {
+    for (let n = 1; n <= 14; n++) {
       row[`Leg ${n} Prop Type`] = "ML";
       row[`Leg ${n} Prop`] = `Team ${n}`;
       row[`Leg ${n} Result`] = "Win";
     }
     const { validRows } = parseSgpRows([row]);
-    expect(validRows[0].legs!.length).toBe(6);
+    expect(validRows[0].legs!.length).toBe(MAX_LEGS);
+  });
+
+  it("parses a full 12-leg SGP correctly (raised beta limit)", () => {
+    const row: Record<string, string> = {
+      Sport: "Soccer",
+      League: "EPL",
+      Match: "A vs B",
+      "Combined Odds": "50",
+      Sportsbook: "bet365",
+      Wager: "10",
+      Result: "Pending",
+    };
+    for (let n = 1; n <= 12; n++) {
+      row[`Leg ${n} Prop`] = `Player ${n} Anytime Scorer`;
+      row[`Leg ${n} Odds`] = "1.5";
+    }
+    const { validRows, errors } = parseSgpRows([row]);
+    expect(errors).toHaveLength(0);
+    expect(validRows[0].legs).toHaveLength(12);
+    expect(validRows[0].legs![11].prop).toBe("Player 12 Anytime Scorer");
   });
 });
 

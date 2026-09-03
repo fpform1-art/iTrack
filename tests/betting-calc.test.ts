@@ -9,7 +9,7 @@ import {
   computeFilteredPL,
   resolveSettlement,
 } from "@/lib/calc/betting";
-import type { Bet } from "@/types/database";
+import type { Bet, LegResult } from "@/types/database";
 
 describe("potentialReturn / suggestedActualReturn / computeProfit", () => {
   it("computes potential return from wager * decimal odds", () => {
@@ -57,6 +57,19 @@ describe("suggestOverallResult (multi-leg suggestion)", () => {
 
   it("mix of push/void with no win and no loss -> void (stake neutral)", () => {
     expect(suggestOverallResult(["push", "void"])).toBe("void");
+  });
+
+  it("scales correctly to a full 12-leg parlay (raised beta limit)", () => {
+    const allWon = Array(12).fill("won") as LegResult[];
+    expect(suggestOverallResult(allWon)).toBe("won");
+
+    // One loss among 11 wins still fails the whole parlay.
+    const oneLoss = [...Array(11).fill("won"), "lost"] as LegResult[];
+    expect(suggestOverallResult(oneLoss)).toBe("lost");
+
+    // 11 settled (won) + 1 still pending -> overall stays pending.
+    const elevenSettled = [...Array(11).fill("won"), "pending"] as LegResult[];
+    expect(suggestOverallResult(elevenSettled)).toBe("pending");
   });
 });
 
@@ -169,5 +182,13 @@ describe("resolveSettlement (regression: null override must not wipe out profit)
     expect(resolveSettlement("push", 100, 2.5)).toEqual({ actualReturn: 100, profit: 0 });
     expect(resolveSettlement("void", 100, 2.5)).toEqual({ actualReturn: 100, profit: 0 });
     expect(resolveSettlement("lost", 100, 2.5)).toEqual({ actualReturn: 0, profit: -100 });
+  });
+
+  it("settles a large 12-leg parlay's compounded combined odds correctly", () => {
+    // 12 legs at 1.5 decimal odds each compounds to 1.5^12 ≈ 129.746...
+    const combinedOdds = Math.pow(1.5, 12);
+    const result = resolveSettlement("won", 20, combinedOdds);
+    expect(result.actualReturn).toBeCloseTo(20 * combinedOdds, 2);
+    expect(result.profit).toBeCloseTo(20 * combinedOdds - 20, 2);
   });
 });

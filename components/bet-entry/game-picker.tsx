@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { Input, Label, Select } from "@/components/ui/input";
-import { LEAGUE_CONFIG, SPORTS, leaguesForSport } from "@/lib/odds/leagues";
+import { LEAGUE_CONFIG, SPORTS, leaguesForSport, findLeague, supportsListedFixtures } from "@/lib/odds/leagues";
 import type { OddsApiEvent } from "@/lib/odds/client";
 import {
   addDaysToDateKey,
@@ -10,6 +10,9 @@ import {
   filterEventsByLocalDate,
   todayLocalDateKey,
 } from "@/lib/odds/date-filter";
+import { parseMatchTeams } from "@/lib/logos/parse-match";
+import { TeamLogo } from "@/components/ui/team-logo";
+import { LeagueLogo } from "@/components/ui/league-logo";
 
 export interface GameSelection {
   sport: string;
@@ -46,6 +49,18 @@ export function GamePicker({
       // synchronous calls within the effect body itself.
       await Promise.resolve();
       if (cancelled) return;
+
+      const league = findLeague(leagueKey);
+      if (league && !supportsListedFixtures(league)) {
+        // Don't spend an API call (or even a request) on a league we
+        // already know isn't available for listed fixtures — go straight
+        // to the Manual Entry notice.
+        setEvents([]);
+        setNotice("Listed fixtures aren't available for this league yet — use Manual Entry.");
+        setLoading(false);
+        return;
+      }
+
       setLoading(true);
       setNotice(null);
       try {
@@ -104,23 +119,30 @@ export function GamePicker({
         <div className="space-y-3">
           <div>
             <Label htmlFor={`${idPrefix}-league`}>League</Label>
-            <Select
-              id={`${idPrefix}-league`}
-              value={leagueKey}
-              onChange={(e) => {
-                setLeagueKey(e.target.value);
-              }}
-            >
-              {SPORTS.map((sport) => (
-                <optgroup key={sport} label={sport}>
-                  {leaguesForSport(sport).map((l) => (
-                    <option key={l.apiKey} value={l.apiKey}>
-                      {l.label}
-                    </option>
-                  ))}
-                </optgroup>
-              ))}
-            </Select>
+            <div className="flex items-center gap-2">
+              <LeagueLogo
+                apiKey={leagueKey}
+                label={findLeague(leagueKey)?.label ?? leagueKey}
+                size={20}
+              />
+              <Select
+                id={`${idPrefix}-league`}
+                value={leagueKey}
+                onChange={(e) => {
+                  setLeagueKey(e.target.value);
+                }}
+              >
+                {SPORTS.map((sport) => (
+                  <optgroup key={sport} label={sport}>
+                    {leaguesForSport(sport).map((l) => (
+                      <option key={l.apiKey} value={l.apiKey}>
+                        {l.label}
+                      </option>
+                    ))}
+                  </optgroup>
+                ))}
+              </Select>
+            </div>
           </div>
 
           <div>
@@ -186,9 +208,28 @@ export function GamePicker({
             )}
           </div>
           {value.match && (
-            <p className="text-xs text-slate-500 dark:text-slate-400">
-              Selected: <span className="font-medium text-slate-700 dark:text-slate-200">{value.match}</span>
-            </p>
+            <div className="text-xs text-slate-500 dark:text-slate-400">
+              <span className="mb-1 block">Selected:</span>
+              {(() => {
+                const teams = parseMatchTeams(value.match);
+                if (!teams) {
+                  return <span className="font-medium text-slate-700 dark:text-slate-200">{value.match}</span>;
+                }
+                return (
+                  <div className="flex flex-wrap items-center gap-x-2 gap-y-1 font-medium text-slate-700 dark:text-slate-200">
+                    <span className="flex items-center gap-1.5">
+                      <TeamLogo name={teams.away} size={18} />
+                      {teams.away}
+                    </span>
+                    <span className="text-slate-400 dark:text-slate-500">@</span>
+                    <span className="flex items-center gap-1.5">
+                      <TeamLogo name={teams.home} size={18} />
+                      {teams.home}
+                    </span>
+                  </div>
+                );
+              })()}
+            </div>
           )}
         </div>
       ) : (

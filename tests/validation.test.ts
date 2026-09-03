@@ -7,14 +7,25 @@ describe("validateLegCount", () => {
     expect(validateLegCount(0).valid).toBe(false);
   });
 
-  it("accepts 2 to 6 legs", () => {
+  it(`accepts ${MIN_LEGS} to ${MAX_LEGS} legs`, () => {
     for (let n = MIN_LEGS; n <= MAX_LEGS; n++) {
       expect(validateLegCount(n).valid).toBe(true);
     }
   });
 
-  it("rejects more than 6 legs", () => {
-    expect(validateLegCount(7).valid).toBe(false);
+  it("accepts legs in the 7-12 range specifically (raised beta limit)", () => {
+    for (let n = 7; n <= 12; n++) {
+      expect(validateLegCount(n).valid).toBe(true);
+    }
+  });
+
+  it(`rejects more than ${MAX_LEGS} legs`, () => {
+    expect(validateLegCount(MAX_LEGS + 1).valid).toBe(false);
+    expect(validateLegCount(13).valid).toBe(false);
+  });
+
+  it("MAX_LEGS is 12 (beta 0.2 raised limit)", () => {
+    expect(MAX_LEGS).toBe(12);
   });
 });
 
@@ -48,14 +59,20 @@ describe("multiLegBetSchema", () => {
     expect(result.success).toBe(true);
   });
 
-  it("accepts a parlay with 6 legs", () => {
-    const legs = Array.from({ length: 6 }, () => leg());
+  it("accepts a parlay with 7 legs (beyond the old 6-leg cap)", () => {
+    const legs = Array.from({ length: 7 }, () => leg());
     const result = multiLegBetSchema.safeParse({ ...base, legs });
     expect(result.success).toBe(true);
   });
 
-  it("rejects a parlay with 7 legs", () => {
-    const legs = Array.from({ length: 7 }, () => leg());
+  it(`accepts a parlay with ${MAX_LEGS} legs (new max)`, () => {
+    const legs = Array.from({ length: MAX_LEGS }, () => leg());
+    const result = multiLegBetSchema.safeParse({ ...base, legs });
+    expect(result.success).toBe(true);
+  });
+
+  it(`rejects a parlay with ${MAX_LEGS + 1} legs`, () => {
+    const legs = Array.from({ length: MAX_LEGS + 1 }, () => leg());
     const result = multiLegBetSchema.safeParse({ ...base, legs });
     expect(result.success).toBe(false);
   });

@@ -8,6 +8,7 @@ import {
   resolveSettlement,
   areLegsLocked,
 } from "@/lib/calc/betting";
+import { MAX_LEGS, MIN_LEGS } from "@/lib/calc/validation";
 import type { BetResult, BetType, LegResult, WhenPlaced } from "@/types/database";
 
 export interface ActionResult {
@@ -66,8 +67,8 @@ export async function createBet(input: NewBetInput): Promise<ActionResult> {
       }
     } else {
       const legCount = input.legs?.length ?? 0;
-      if (legCount < 2 || legCount > 6) {
-        throw new Error("A multi-leg bet needs between 2 and 6 legs.");
+      if (legCount < MIN_LEGS || legCount > MAX_LEGS) {
+        throw new Error(`A multi-leg bet needs between ${MIN_LEGS} and ${MAX_LEGS} legs.`);
       }
       for (const leg of input.legs!) {
         if (!leg.sport || !leg.league || !leg.match || !leg.prop) {
@@ -341,7 +342,7 @@ export async function addLeg(betId: string, leg: NewLegInput): Promise<ActionRes
     if (areLegsLocked(bet.result as BetResult, legResults)) {
       throw new Error("Legs are locked once grading has begun.");
     }
-    if (legResults.length >= 6) throw new Error("A bet can have at most 6 legs.");
+    if (legResults.length >= MAX_LEGS) throw new Error(`A bet can have at most ${MAX_LEGS} legs.`);
     if (leg.leg_odds != null) validateOdds(leg.leg_odds);
 
     const { error } = await supabase.from("bet_legs").insert({
@@ -391,7 +392,7 @@ export async function removeLeg(betId: string, legId: string): Promise<ActionRes
     if (areLegsLocked(bet.result as BetResult, legResults)) {
       throw new Error("Legs are locked once grading has begun.");
     }
-    if (legResults.length <= 2) throw new Error("A multi-leg bet needs at least 2 legs.");
+    if (legResults.length <= MIN_LEGS) throw new Error(`A multi-leg bet needs at least ${MIN_LEGS} legs.`);
 
     const { error } = await supabase.from("bet_legs").delete().eq("id", legId);
     if (error) throw new Error(error.message);

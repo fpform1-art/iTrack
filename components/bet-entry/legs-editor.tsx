@@ -49,6 +49,17 @@ export function LegsEditor({
 
   return (
     <div className="space-y-3">
+      <div className="flex items-center justify-between">
+        <span className="text-xs font-medium text-slate-500 dark:text-slate-400">
+          {legs.length} of {MAX_LEGS} legs
+        </span>
+        {legs.length < MAX_LEGS && (
+          <Button type="button" variant="secondary" size="sm" onClick={addLeg}>
+            + Add leg
+          </Button>
+        )}
+      </div>
+
       {legs.map((leg, idx) => (
         <div key={idx} className="rounded-lg border border-slate-200 p-3 dark:border-slate-700">
           <div className="mb-2 flex items-center justify-between">

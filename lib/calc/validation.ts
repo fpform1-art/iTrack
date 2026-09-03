@@ -2,7 +2,7 @@ import { z } from "zod";
 import { WHEN_PLACED_OPTIONS } from "@/types/database";
 
 export const MIN_LEGS = 2;
-export const MAX_LEGS = 6;
+export const MAX_LEGS = 12;
 
 const oddsSchema = z
   .number({ error: "Odds must be a number" })

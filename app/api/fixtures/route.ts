@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 import { getEventsForLeague, isOddsApiConfigured } from "@/lib/odds/client";
-import { findLeague } from "@/lib/odds/leagues";
+import { findLeague, supportsListedFixtures } from "@/lib/odds/leagues";
 
 export async function GET(request: Request) {
   // Require an authenticated session even though this data isn't
@@ -21,8 +21,22 @@ export async function GET(request: Request) {
 
   const { searchParams } = new URL(request.url);
   const leagueKey = searchParams.get("league");
-  if (!leagueKey || !findLeague(leagueKey)) {
+  const league = leagueKey ? findLeague(leagueKey) : undefined;
+  if (!leagueKey || !league) {
     return NextResponse.json({ error: "Unknown or missing league key." }, { status: 400 });
+  }
+
+  // Defense-in-depth: the client already avoids calling this for a league
+  // marked unsupported, but never spend an API call on one regardless.
+  if (!supportsListedFixtures(league)) {
+    return NextResponse.json(
+      {
+        configured: true,
+        events: [],
+        message: "Listed fixtures aren't available for this league yet — use Manual Entry.",
+      },
+      { status: 200 }
+    );
   }
 
   try {

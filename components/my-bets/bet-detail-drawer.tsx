@@ -20,6 +20,9 @@ import { suggestOverallResult, areLegsLocked, suggestedActualReturn } from "@/li
 import { MAX_LEGS, MIN_LEGS } from "@/lib/calc/validation";
 import type { Bet, BetResult, LegResult, WhenPlaced } from "@/types/database";
 import { formatCurrency } from "@/lib/format";
+import { MatchLabel } from "@/components/ui/match-label";
+import { LeagueLogo } from "@/components/ui/league-logo";
+import { findLeagueByLabel } from "@/lib/odds/leagues";
 
 const RESULT_OPTIONS: BetResult[] = ["pending", "won", "lost", "push", "void"];
 const LEG_RESULT_LABELS: Record<LegResult, string> = {
@@ -213,9 +216,11 @@ export function BetDetailDrawer({ bet, onClose }: { bet: Bet | null; onClose: ()
     <Drawer open={Boolean(bet)} onClose={onClose} title={isSingle ? "Edit Bet" : "Edit Bet / Grade"}>
       <div className="space-y-5 pb-6">
         <div className="rounded-lg bg-slate-50 p-3 dark:bg-slate-900">
-          <p className="text-sm font-medium text-slate-900 dark:text-slate-100">{bet.match}</p>
-          <p className="text-xs text-slate-500 dark:text-slate-400">
-            {bet.sport} • {bet.league} • {new Date(bet.placed_at).toLocaleString()}
+          <MatchLabel match={bet.match} />
+          <p className="mt-1 flex items-center gap-1.5 text-xs text-slate-500 dark:text-slate-400">
+            {bet.sport} •
+            <LeagueLogo apiKey={findLeagueByLabel(bet.league)?.apiKey ?? ""} label={bet.league} size={14} />
+            {bet.league} • {new Date(bet.placed_at).toLocaleString()}
           </p>
         </div>
 
